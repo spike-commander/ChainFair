@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChainFair - Supply Chain Transparency</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: #4CAF50;
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .lang-toggle {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .lang-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: #4CAF50;
+        }
+        
+        .container {
+            padding: 80px 20px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .product-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .product-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-color: #4CAF50;
+        }
+        
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .product-origin {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .product-price {
+            font-size: 16px;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        
+        .detail-header {
+            text-align: center;
+            color: #4CAF50;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-product {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .detail-origin {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+        }
+        
+        .price-box {
+            text-align: center;
+        }
+        
+        .price-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .price-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .price-percent {
+            font-size: 14px;
+            color: #4CAF50;
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #999;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0 15px;
+        }
+        
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .stage-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stage-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .stage-info {
+            flex: 1;
+        }
+        
+        .stage-type {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stage-name {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .stage-price {
+            font-size: 14px;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+        
+        .insight-card {
+            background: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 20px;
+        }
+        
+        .insight-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #E65100;
+            margin-bottom: 8px;
+        }
+        
+        .insight-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .tip-card {
+            background: #9C27B0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .tip-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .tip-desc {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+        
+        .back-link {
+            color: #4CAF50;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .web-note {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50vh;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ChainFair</h1>
+        <div class="lang-toggle">
+            <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" id="btn-hi" onclick="setLang('hi')">हि</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Home Screen -->
+        <div id="home-screen">
+            <div class="card">
+                <p class="web-note">Scan QR codes with the mobile app to see supply chain data</p>
+                <button class="btn btn-primary" onclick="showDemo()">View Demo Data</button>
+            </div>
+        </div>
+        
+        <!-- Demo Selection Screen -->
+        <div id="demo-screen" class="hidden">
+            <span class="back-link" onclick="goHome()">← Back</span>
+            <h2 class="section-title">Select a demo product</h2>
+            <div class="product-list">
+                <div class="product-item" onclick="showDetail(0)">
+                    <div class="product-name">Jabalpur Alphonso Mango</div>
+                    <div class="product-origin">Jabalpur, Madhya Pradesh</div>
+                    <div class="product-price">₹20 → ₹200</div>
+                </div>
+                <div class="product-item" onclick="showDetail(1)">
+                    <div class="product-name">Jabalpur Organic Tomato</div>
+                    <div class="product-origin">Jabalpur, Madhya Pradesh</div>
+                    <div class="product-price">₹15 → ₹150</div>
+                </div>
+                <div class="product-item" onclick="showDetail(2)">
+                    <div class="product-name">Kashmir Premium Apple</div>
+                    <div class="product-origin">Kashmir Valley</div>
+                    <div class="product-price">₹50 → ₹300</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detail Screen -->
+        <div id="detail-screen" class="hidden">
+            <span class="back-link" onclick="showDemo()">← Back</span>
+            <div class="card">
+                <div class="detail-header">✓ Verified on Blockchain</div>
+                <div class="detail-product" id="detail-name"></div>
+                <div class="detail-origin" id="detail-origin"></div>
+                
+                <div class="price-row">
+                    <div class="price-box">
+                        <div class="price-label">Farmer Share</div>
+                        <div class="price-value" id="detail-farmer-price"></div>
+                        <div class="price-percent" id="detail-farmer-percent"></div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="price-box">
+                        <div class="price-label">Consumer Price</div>
+                        <div class="price-value" id="detail-total-price"></div>
+                        <div class="price-percent">100%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="section-title">Profit Breakdown</div>
+                <div class="chart-container">
+                    <canvas id="pieChart" width="200" height="200"></canvas>
+                </div>
+                <div class="legend" id="chart-legend"></div>
+            </div>
+            
+            <div class="card">
+                <div class="section-title">Supply Chain Stages</div>
+                <div id="stages-list"></div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-title">Economic Insight</div>
+                <div class="insight-text" id="insight-text"></div>
+            </div>
+            
+            <div class="tip-card">
+                <div class="tip-title" id="tip-title">Support Fair Trade</div>
+                <div class="tip-desc" id="tip-desc">Tip the farmer directly via UPI</div>
+            </div>
+            
+            <button class="btn btn-secondary" onclick="showDemo()">Scan Another</button>
+        </div>
+    </div>
+    
+    <script>
+        const DEMO_CHAINS = [
+            {
+                tokenId: 0,
+                productName: 'Jabalpur Alphonso Mango',
+                origin: 'Jabalpur, Madhya Pradesh',
+                farmerPrice: 20,
+                totalPrice: 200,
+                farmerShare: 10,
+                stages: [
+                    { type: 'Farm/Farmer', name: 'Farmer Cooperative', price: 20, share: 10, color: '#4CAF50' },
+                    { type: 'Wholesaler', name: 'Jabalpur Wholesale', price: 60, share: 20, color: '#2196F3' },
+                    { type: 'Retailer', name: 'City Mart', price: 120, share: 30, color: '#FF9800' },
+                    { type: 'Store', name: 'Fresh Picks', price: 200, share: 40, color: '#9C27B0' }
+                ]
+            },
+            {
+                tokenId: 1,
+                productName: 'Jabalpur Organic Tomato',
+                origin: 'Jabalpur, Madhya Pradesh',
+                farmerPrice: 15,
+                totalPrice: 150,
+                farmerShare: 10,
+                stages: [
+                    { type: 'Farm/Farmer', name: 'Local Farmers', price: 15, share: 10, color: '#4CAF50' },
+                    { type: 'Wholesaler', name: 'Jabalpur Wholesale', price: 40, share: 17, color: '#2196F3' },
+                    { type: 'Retailer', name: 'City Mart', price: 80, share: 27, color: '#FF9800' },
+                    { type: 'Store', name: 'Fresh Picks', price: 150, share: 46, color: '#9C27B0' }
+                ]
+            },
+            {
+                tokenId: 2,
+                productName: 'Kashmir Premium Apple',
+                origin: 'Kashmir Valley',
+                farmerPrice: 50,
+                totalPrice: 300,
+                farmerShare: 17,
+                stages: [
+                    { type: 'Farm/Farmer', name: 'Kashmir Orchard', price: 50, share: 17, color: '#4CAF50' },
+                    { type: 'Wholesaler', name: 'Delhi Agricultural', price: 100, share: 17, color: '#2196F3' },
+                    { type: 'Retailer', name: 'Premium Foods', price: 150, share: 17, color: '#FF9800' },
+                    { type: 'Store', name: 'Jabalpur Fresh', price: 300, share: 49, color: '#9C27B0' }
+                ]
+            }
+        ];
+        
+        const translations = {
+            en: {
+                webNote: 'Scan QR codes with the mobile app to see supply chain data',
+                viewDemo: 'View Demo Data',
+                selectDemo: 'Select a demo product',
+                farmerShare: 'Farmer Share',
+                consumerPrice: 'Consumer Price',
+                profitBreakdown: 'Profit Breakdown',
+                chainStages: 'Supply Chain Stages',
+                economicInsight: 'Economic Insight',
+                insight: 'Why do farmers get less? Middlemen add transport, storage, and risk costs at each step.',
+                tipTitle: 'Support Fair Trade',
+                tipDesc: 'Tip the farmer directly via UPI',
+                scanAnother: 'Scan Another',
+                back: '← Back'
+            },
+            hi: {
+                webNote: 'आपूर्ति श्रृंखला डेटा देखने के लिए मोबाइल ऐप से QR कोड स्कैन करें',
+                viewDemo: 'डेमो डेटा देखें',
+                selectDemo: 'डेमो उत्पाद चुनें',
+                farmerShare: 'किसान का हिस्सा',
+                consumerPrice: 'उपभोक्ता मूल्य',
+                profitBreakdown: 'लाभ विभाजन',
+                chainStages: 'आपूर्ति श्रृंखला चरण',
+                economicInsight: 'आर्थिक अंतर्दृष्टि',
+                insight: 'किसान कम क्यों पाते हैं? मध्यस्थ प्रत्येक चरण में परिवहन, भंडारण और जोखिम लागत जोड़ते हैं।',
+                tipTitle: 'उचित व्यापार का समर्थन करें',
+                tipDesc: 'UPI से किसान को सीधे टिप दें',
+                scanAnother: 'फिर से स्कैन करें',
+                back: '← वापस'
+            }
+        };
+        
+        let lang = 'en';
+        
+        function setLang(newLang) {
+            lang = newLang;
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('btn-hi').classList.toggle('active', lang === 'hi');
+            updateTexts();
+        }
+        
+        function updateTexts() {
+            const t = translations[lang];
+            document.querySelector('.web-note').textContent = t.webNote;
+            document.querySelector('.btn-primary').textContent = t.viewDemo;
+            document.querySelector('.section-title').textContent = t.selectDemo;
+            document.getElementById('tip-title').textContent = t.tipTitle;
+            document.getElementById('tip-desc').textContent = t.tipDesc;
+            document.querySelector('.btn-secondary').textContent = t.scanAnother;
+        }
+        
+        function showScreen(id) {
+            ['home-screen', 'demo-screen', 'detail-screen'].forEach(screen => {
+                document.getElementById(screen).classList.toggle('hidden', screen !== id);
+            });
+        }
+        
+        function goHome() {
+            showScreen('home-screen');
+        }
+        
+        function showDemo() {
+            showScreen('demo-screen');
+            document.querySelector('.back-link').textContent = translations[lang].back;
+        }
+        
+        function showDetail(index) {
+            const chain = DEMO_CHAINS[index];
+            const t = translations[lang];
+            
+            document.getElementById('detail-name').textContent = chain.productName;
+            document.getElementById('detail-origin').textContent = chain.origin;
+            document.getElementById('detail-farmer-price').textContent = '₹' + chain.farmerPrice;
+            document.getElementById('detail-farmer-percent').textContent = chain.farmerShare + '%';
+            document.getElementById('detail-total-price').textContent = '₹' + chain.totalPrice;
+            document.getElementById('insight-text').textContent = t.insight;
+            
+            document.querySelector('.back-link').textContent = t.back;
+            document.querySelector('#detail-screen .section-title').textContent = t.profitBreakdown;
+            document.querySelectorAll('#detail-screen .section-title')[1].textContent = t.chainStages;
+            document.querySelector('.insight-title').textContent = t.economicInsight;
+            document.getElementById('tip-title').textContent = t.tipTitle;
+            document.getElementById('tip-desc').textContent = t.tipDesc;
+            document.querySelector('.btn-secondary').textContent = t.scanAnother;
+            
+            // Draw pie chart
+            drawPieChart(chain.stages);
+            
+            // Show stages
+            const stagesList = document.getElementById('stages-list');
+            stagesList.innerHTML = chain.stages.map((stage, i) => `
+                <div class="stage-item">
+                    <div class="stage-number" style="background-color: ${stage.color}">${i + 1}</div>
+                    <div class="stage-info">
+                        <div class="stage-type">${stage.type}</div>
+                        <div class="stage-name">${stage.name}</div>
+                        <div class="stage-price">₹${stage.price} (${stage.share}%)</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            showScreen('detail-screen');
+        }
+        
+        function drawPieChart(stages) {
+            const canvas = document.getElementById('pieChart');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 80;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            let startAngle = -Math.PI / 2;
+            
+            stages.forEach(stage => {
+                const sliceAngle = (stage.share / 100) * 2 * Math.PI;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = stage.color;
+                ctx.fill();
+                
+                startAngle += sliceAngle;
+            });
+            
+            // Center circle for donut effect
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 50, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            
+            // Legend
+            const legend = document.getElementById('chart-legend');
+            legend.innerHTML = stages.map(stage => `
+                <div class="legend-item">
+                    <div class="legend-dot" style="background-color: ${stage.color}"></div>
+                    <span>${stage.type}: ${stage.share}%</span>
+                </div>
+            `).join('');
+        }
+        
+        // Initialize
+        updateTexts();
+    </script>
+</body>
+</html>
