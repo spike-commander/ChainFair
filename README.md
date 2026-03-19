@@ -69,7 +69,7 @@ chainfair/
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourusername/chainfair.git
+git clone https://github.com/spike-commander/chainfair.git
 cd chainfair
 npm install
 ```
@@ -252,9 +252,9 @@ MIT License - See LICENSE file
 
 ## Contact
 
-- Project Link: https://github.com/yourusername/chainfair
+- Project Link: https://github.com/spike-commander/chainfair
 - Discord: Join our community
-- Email: team@chainfair.app
+- Email: abdulhaiy1502@gmail.com
 
 ---
 
